@@ -1,12 +1,17 @@
+import type { LinksFunction } from "@remix-run/node";
+import { json } from "@remix-run/node";
 import {
   Links,
   Meta,
   Outlet,
   Scripts,
   ScrollRestoration,
+  useLoaderData,
 } from "@remix-run/react";
-import type { LinksFunction } from "@remix-run/node";
-
+import PublicEnv from "./components/public-env";
+import { Toaster } from "./components/ui/sonner";
+import DefaultLayout from "./layouts/default";
+import WrapperProviders from "./providers/wrapper";
 import "./tailwind.css";
 
 export const links: LinksFunction = () => [
@@ -22,7 +27,21 @@ export const links: LinksFunction = () => [
   },
 ];
 
+export async function loader() {
+  return json({
+    ENV: {
+      APPWRITE_DATABASE_ID: process.env.APPWRITE_DATABASE_ID ?? "",
+      APPWRITE_COLLECTION_STORE: process.env.APPWRITE_COLLECTION_STORE ?? "",
+      APPWRITE_COLLECTION_CATEGORIES:
+        process.env.APPWRITE_COLLECTION_CATEGORIES ?? "",
+      SCRAPER_API: process.env.SCRAPER_API ?? "",
+    },
+  });
+}
+
 export function Layout({ children }: { children: React.ReactNode }) {
+  const data = useLoaderData<typeof loader>();
+
   return (
     <html lang="en">
       <head>
@@ -32,8 +51,13 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body>
-        {children}
+        <WrapperProviders>
+          <DefaultLayout>{children}</DefaultLayout>
+
+          <Toaster />
+        </WrapperProviders>
         <ScrollRestoration />
+        <PublicEnv {...data.ENV} />
         <Scripts />
       </body>
     </html>
