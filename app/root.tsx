@@ -34,6 +34,7 @@ export async function loader() {
       APPWRITE_COLLECTION_STORE: process.env.APPWRITE_COLLECTION_STORE ?? "",
       APPWRITE_COLLECTION_CATEGORIES:
         process.env.APPWRITE_COLLECTION_CATEGORIES ?? "",
+      APPWRITE_DOMAIN: process.env.APPWRITE_DOMAIN ?? "",
       SCRAPER_API: process.env.SCRAPER_API ?? "",
     },
   });

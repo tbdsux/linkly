@@ -8,6 +8,7 @@ type EnvProps = {
   APPWRITE_DATABASE_ID: string;
   APPWRITE_COLLECTION_STORE: string;
   APPWRITE_COLLECTION_CATEGORIES: string;
+  APPWRITE_DOMAIN: string;
   SCRAPER_API: string;
 };
 
