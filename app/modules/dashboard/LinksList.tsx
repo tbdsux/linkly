@@ -1,6 +1,4 @@
-import { EditIcon } from "lucide-react";
 import { Badge } from "~/components/ui/badge";
-import { Button } from "~/components/ui/button";
 import {
   Card,
   CardContent,
@@ -10,6 +8,7 @@ import {
 } from "~/components/ui/card";
 import { useDashboard } from "~/providers/DashboardProvider";
 import DeleteLink from "./DeleteLink";
+import EditLink from "./EditLink";
 
 export default function DashboardLinksList() {
   const { linksQuery } = useDashboard();
@@ -24,10 +23,7 @@ export default function DashboardLinksList() {
             <Card key={link.$id} className="group relative">
               <div className="absolute top-2 right-2 hidden group-hover:block group-focus:block">
                 <div className="space-x-2">
-                  <Button className="text-sm h-auto py-1 space-x-1 px-2">
-                    <EditIcon className="h-4 w-4" />
-                    <span>Edit</span>
-                  </Button>
+                  <EditLink data={link} />
 
                   <DeleteLink linkTitle={link.urlTitle} id={link.$id} />
                 </div>
@@ -67,6 +63,17 @@ export default function DashboardLinksList() {
                   ) : (
                     <Badge variant={"outline"}>Uncategorized</Badge>
                   )}
+
+                  {link.$updatedAt > link.$createdAt ? (
+                    <p className="text-right mt-2">
+                      <small className="text-muted-foreground">
+                        Updated:{" "}
+                        <strong>
+                          {new Date(link.$createdAt).toLocaleString()}
+                        </strong>
+                      </small>
+                    </p>
+                  ) : null}
                 </div>
               </CardContent>
             </Card>
