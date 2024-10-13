@@ -1,6 +1,7 @@
 import { LoaderFunctionArgs, json } from "@remix-run/node";
 import { MetaFunction, useLoaderData } from "@remix-run/react";
 import { OAuthProvider } from "appwrite";
+import { AuthRoute } from "~/auth/ProtectRoute";
 import { Button } from "~/components/ui/button";
 import {
   Card,
@@ -32,25 +33,27 @@ export default function LoginPage() {
   };
 
   return (
-    <main className="flex-1">
-      <div className="max-w-3xl w-full mx-auto px-4 md:px-6">
-        <Card>
-          <CardHeader className="text-center">
-            <CardTitle>Login to your account</CardTitle>
-            <CardDescription>
-              Login using your social media accounts below
-            </CardDescription>
-          </CardHeader>
+    <AuthRoute>
+      <main className="flex-1">
+        <div className="max-w-3xl w-full mx-auto px-4 md:px-6">
+          <Card>
+            <CardHeader className="text-center">
+              <CardTitle>Login to your account</CardTitle>
+              <CardDescription>
+                Login using your social media accounts below
+              </CardDescription>
+            </CardHeader>
 
-          <CardContent>
-            <div className="grid gap-4">
-              <Button onClick={loginWithGithub}>Login with Github</Button>
+            <CardContent>
+              <div className="grid gap-4">
+                <Button onClick={loginWithGithub}>Login with Github</Button>
 
-              <Button disabled>Login with Google</Button>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    </main>
+                <Button disabled>Login with Google</Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </main>
+    </AuthRoute>
   );
 }

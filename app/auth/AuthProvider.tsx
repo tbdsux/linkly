@@ -18,6 +18,7 @@ export default function AuthProvider(props: { children: ReactNode }) {
 
       return user;
     },
+    retry: false,
     refetchOnWindowFocus: false,
   });
 

@@ -1,4 +1,5 @@
 import { MetaFunction } from "@remix-run/react";
+import { ProtectRoute } from "~/auth/ProtectRoute";
 import CategoryNew from "~/modules/dashboard/CategoryNew";
 import DashboardLinksList from "~/modules/dashboard/LinksList";
 import NewLink from "~/modules/dashboard/NewLink";
@@ -10,21 +11,23 @@ export const meta: MetaFunction = () => {
 
 export default function DashboardPage() {
   return (
-    <DashboardProvider>
-      <main className="flex-1 lg:w-3/4 mx-auto ">
-        <div className="flex justify-between items-center space-x-4 w-full">
-          <h3 className="font-bold text-lg">All Links</h3>
+    <ProtectRoute redirectTo="/login">
+      <DashboardProvider>
+        <main className="flex-1 lg:px-6 mx-auto w-full">
+          <div className="flex justify-between items-center space-x-4 w-full">
+            <h3 className="font-bold text-lg">All Links</h3>
 
-          <div className="inline-flex items-center space-x-2">
-            <NewLink />
-            <CategoryNew />
+            <div className="inline-flex items-center space-x-2">
+              <NewLink />
+              <CategoryNew />
+            </div>
           </div>
-        </div>
 
-        <hr className="my-4" />
+          <hr className="my-4" />
 
-        <DashboardLinksList />
-      </main>
-    </DashboardProvider>
+          <DashboardLinksList />
+        </main>
+      </DashboardProvider>
+    </ProtectRoute>
   );
 }
