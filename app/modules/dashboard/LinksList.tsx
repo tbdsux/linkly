@@ -16,7 +16,7 @@ export default function DashboardLinksList() {
       {linksQuery.isLoading && <div>Loading...</div>}
       {linksQuery.isError && <div>Error loading links</div>}
       {linksQuery.isSuccess && (
-        <div className="grid md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {linksQuery.data?.documents.map((link) => (
             <Card key={link.$id} className="">
               <CardHeader>
@@ -41,7 +41,7 @@ export default function DashboardLinksList() {
                     href={link.urlLink}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-blue-500 text-sm"
+                    className="text-blue-500 text-sm break-all"
                   >
                     {link.urlLink}
                   </a>
