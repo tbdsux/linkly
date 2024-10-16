@@ -1,3 +1,4 @@
+import { Loading } from "~/components/Loader";
 import { Badge } from "~/components/ui/badge";
 import {
   Card,
@@ -15,8 +16,23 @@ export default function DashboardLinksList() {
 
   return (
     <div>
-      {linksQuery.isLoading && <div>Loading...</div>}
-      {linksQuery.isError && <div>Error loading links</div>}
+      {linksQuery.isLoading && (
+        <div>
+          <Loading />
+        </div>
+      )}
+      {linksQuery.isError && (
+        <Card className="border-red-300">
+          <CardHeader>
+            <CardTitle className="text-lg">Error</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <CardDescription>
+              Failed to load links. Please try again.
+            </CardDescription>
+          </CardContent>
+        </Card>
+      )}
       {linksQuery.isSuccess && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {linksQuery.data?.documents.length === 0 ? (

@@ -1,5 +1,6 @@
 import { useNavigate } from "@remix-run/react";
 import { ReactNode, useEffect } from "react";
+import { Loading } from "~/components/Loader";
 import { useAuth } from "./AuthProvider";
 
 export function ProtectRoute(props: {
@@ -15,7 +16,14 @@ export function ProtectRoute(props: {
     }
   }, [navigate, user]);
 
-  if (isLoading) return <></>;
+  if (isLoading)
+    return (
+      <div className="flex-1">
+        <div className="flex items-center justify-center py-24">
+          <Loading size={100} />
+        </div>
+      </div>
+    );
 
   return <>{props.children}</>;
 }
@@ -30,7 +38,14 @@ export function AuthRoute(props: { children: ReactNode }) {
     }
   }, [navigate, user]);
 
-  if (isLoading) return <></>;
+  if (isLoading)
+    return (
+      <div className="flex-1">
+        <div className="flex items-center justify-center py-24">
+          <Loading size={100} />
+        </div>
+      </div>
+    );
 
   return <>{props.children}</>;
 }
