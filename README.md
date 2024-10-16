@@ -1,40 +1,20 @@
-# Welcome to Remix!
+![Linkly Logo](./public/logo.png)
 
-- 📖 [Remix docs](https://remix.run/docs)
+# linkly
 
-## Development
+Manage your links like a pro
 
-Run the dev server:
+A simple service to save, store, bookmark your favorite links
 
-```shellscript
-npm run dev
-```
+![App](https://jam.dev/cdn-cgi/image/width=1600,quality=100,dpr=1/https://cdn-jam-screenshots.jam.dev/257a4a41a77a2ac3d7103b0d99dcf2d1/screenshot/c6067087-3541-4c49-8175-60f8cee4da08.png)
 
-## Deployment
+## Stack
 
-First, build your app for production:
+- Remix (React)
+- ShadCN
+- Tailwind
+- AppWrite (Database and Auth)
 
-```sh
-npm run build
-```
+##
 
-Then run the app in production mode:
-
-```sh
-npm start
-```
-
-Now you'll need to pick a host to deploy it to.
-
-### DIY
-
-If you're familiar with deploying Node applications, the built-in Remix app server is production-ready.
-
-Make sure to deploy the output of `npm run build`
-
-- `build/server`
-- `build/client`
-
-## Styling
-
-This template comes with [Tailwind CSS](https://tailwindcss.com/) already configured for a simple default starting experience. You can use whatever css framework you prefer. See the [Vite docs on css](https://vitejs.dev/guide/features.html#css) for more information.
+&copy; 2024 | tbdsux
