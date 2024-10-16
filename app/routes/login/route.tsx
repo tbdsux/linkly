@@ -32,6 +32,14 @@ export default function LoginPage() {
     );
   };
 
+  const loginWithGoogle = async () => {
+    return await account.createOAuth2Session(
+      OAuthProvider.Google,
+      new URL("/dashboard", data.origin).toString(),
+      new URL("/login", data.origin).toString()
+    );
+  };
+
   return (
     <AuthRoute>
       <main className="flex-1">
@@ -48,7 +56,7 @@ export default function LoginPage() {
               <div className="grid gap-4">
                 <Button onClick={loginWithGithub}>Login with Github</Button>
 
-                <Button disabled>Login with Google</Button>
+                <Button onClick={loginWithGoogle}>Login with Google</Button>
               </div>
             </CardContent>
           </Card>
