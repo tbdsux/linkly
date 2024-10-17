@@ -175,7 +175,7 @@ export default function NewLink() {
                           href={data.url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-blue-500 text-sm"
+                          className="text-blue-500 text-sm break-all"
                         >
                           {data.requested_url}
                         </a>

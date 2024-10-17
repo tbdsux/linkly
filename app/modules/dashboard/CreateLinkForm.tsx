@@ -98,7 +98,8 @@ export default function CreateLinkForm(props: {
     try {
       const linkData: Partial<LinksStore> = {
         ownerId: user.$id,
-        urlLink: 'error' in props.data ? props.data.url : props.data.requested_url,
+        urlLink:
+          "error" in props.data ? props.data.url : props.data.requested_url,
         urlTitle: data.urlTitle,
         urlDescription: data.urlDescription,
         urlFavicon: urlData?.favicon ?? "",
@@ -172,7 +173,7 @@ export default function CreateLinkForm(props: {
                     href={props.data.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-blue-500 text-sm"
+                    className="text-blue-500 text-sm break-all"
                   >
                     {props.data.url}
                   </a>
