@@ -57,6 +57,8 @@ export async function loader() {
         process.env.APPWRITE_COLLECTION_CATEGORIES ?? "",
       APPWRITE_DOMAIN: process.env.APPWRITE_DOMAIN ?? "",
       SCRAPER_API: process.env.SCRAPER_API ?? "",
+      ANALYTICS_FILE: process.env.ANALYTICS_FILE ?? "",
+      ANALYTICS_WEBSITE_ID: process.env.ANALYTICS_WEBSITE_ID ?? "",
     },
   });
 }
@@ -81,6 +83,15 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <ScrollRestoration />
         <PublicEnv {...data.ENV} />
         <Scripts />
+
+        {/* Umami analytics script  */}
+        {data.ENV.ANALYTICS_FILE && data.ENV.ANALYTICS_WEBSITE_ID ? (
+          <script
+            defer
+            src={data.ENV.ANALYTICS_FILE}
+            data-website-id={data.ENV.ANALYTICS_WEBSITE_ID}
+          />
+        ) : null}
       </body>
     </html>
   );
