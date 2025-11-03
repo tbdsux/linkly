@@ -86,7 +86,6 @@ export default function ConfirmCreateLink(props: {
       const urlData = 'error' in props.data ? null : props.data
 
       const partialData: Partial<Links> = {
-        ownerId: user.$id,
         urlLink:
           'error' in props.data ? props.data.url : props.data.requested_url,
         urlTitle: value.urlTitle,

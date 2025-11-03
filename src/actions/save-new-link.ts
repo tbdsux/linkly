@@ -5,7 +5,6 @@ import { ID } from 'node-appwrite'
 import z from 'zod'
 
 const inputSchema = z.object({
-  ownerId: z.string(),
   isFavorite: z.boolean().optional(),
   urlLink: z.string(),
   urlTitle: z.string(),
@@ -19,14 +18,18 @@ export const saveNewLinkFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .inputValidator(inputSchema)
   .handler(async ({ data }) => {
-    const { tablesDb } = await createSessionClient()
+    const { tablesDb, account } = await createSessionClient()
+    const user = await account.get()
 
     try {
       await tablesDb.createRow({
         databaseId: appwriteConfig.databaseId,
         tableId: appwriteConfig.collection.links,
         rowId: ID.unique(),
-        data,
+        data: {
+          ...data,
+          ownerId: user.$id,
+        },
       })
 
       return {

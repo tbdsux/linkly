@@ -1,5 +1,6 @@
 import { getUsersCategories } from '@/data/get-users-categories'
 import { getUserLinks } from '@/data/get-users-links'
+import NewCategory from '@/modules/categories/new-category'
 import DashboardProvider from '@/modules/dashboard-provider'
 import LinksList from '@/modules/link-management/links-list'
 import NewLink from '@/modules/link-management/new-link'
@@ -49,7 +50,7 @@ function RouteComponent() {
 
           <div className="inline-flex items-center space-x-2">
             <NewLink />
-            {/* <CategoryNew /> */}
+            <NewCategory categoryCount={userCategories.total} />
           </div>
         </div>
 
