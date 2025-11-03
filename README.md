@@ -1,4 +1,4 @@
-![Linkly Logo](./public/logo.png)
+![Linkly Logo](./src/assets/logo.png)
 
 # linkly
 
@@ -6,18 +6,21 @@ Manage your links like a pro
 
 A simple service to save, store, bookmark your favorite links
 
-![App](https://jam.dev/cdn-cgi/image/width=1600,quality=100,dpr=1/https://cdn-jam-screenshots.jam.dev/257a4a41a77a2ac3d7103b0d99dcf2d1/screenshot/c6067087-3541-4c49-8175-60f8cee4da08.png)
+![App Screenshot](./screenshot.png)
 
 ## Development
 
 ### Environment Variables
 
 ```sh
+SECRET_KEY=
+
 # appwrite database
 APPWRITE_DATABASE_ID=your-database-id
 APPWRITE_COLLECTION_STORE=create-a-collection-store
 APPWRITE_COLLECTION_CATEGORIES=create-a-collection-categories
-APPWRITE_DOMAIN=appwrite-domain # this is to avoid browser issue with 3rd party cookies
+APPWRITE_DOMAIN=appwrite-domain
+APPWRITE_API_KEY=
 
 SCRAPER_API= # your hosted instance of https://github.com/tbdsux/cf-worker-scraper
 
