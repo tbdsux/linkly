@@ -1,4 +1,4 @@
-import { saveNewLinkFn } from '@/actions/link-actions'
+import { updateLinkFn } from '@/actions/link-actions'
 import { useAuth } from '@/components/auth-provider'
 import { Button } from '@/components/ui/button'
 import {
@@ -31,33 +31,27 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
-import { getNonEmptyString } from '@/lib/utils'
 import { linkFormSchema } from '@/shared-schema/new-link-schema'
 import { Links } from '@/types/links'
-import { UrlError, UrlMetadata } from '@/types/url'
 import { useForm } from '@tanstack/react-form'
 import { useRouter } from '@tanstack/react-router'
-import { useState, useTransition } from 'react'
+import { PenIcon } from 'lucide-react'
+import { useTransition } from 'react'
 import { toast } from 'sonner'
 import { useDashboardData } from '../dashboard-provider'
 
-export default function ConfirmCreateLink(props: {
-  data: UrlMetadata | UrlError
-}) {
-  const router = useRouter()
-
+export default function EditLink(props: { link: Links }) {
   const { user } = useAuth()
   const { categories } = useDashboardData()
 
-  const [isOpen, setIsOpen] = useState(false)
-
   const [isProcessing, startTransition] = useTransition()
+  const router = useRouter()
 
   const form = useForm({
     defaultValues: {
-      urlTitle: 'error' in props.data ? '' : props.data.title,
-      urlDescription: 'error' in props.data ? '' : props.data.description,
-      category: '',
+      urlTitle: props.link.urlTitle ?? '',
+      urlDescription: props.link.urlDescription ?? '',
+      category: props.link.category ?? '',
     },
     validators: {
       onSubmit: linkFormSchema,
@@ -69,46 +63,38 @@ export default function ConfirmCreateLink(props: {
 
       if (!user) return
 
-      const urlData = 'error' in props.data ? null : props.data
-
-      const partialData: Partial<Links> = {
-        urlLink:
-          'error' in props.data ? props.data.url : props.data.requested_url,
-        urlTitle: value.urlTitle,
-        urlDescription: value.urlDescription,
-        urlFavicon: urlData?.favicon ?? '',
-        urlLogo: getNonEmptyString([urlData?.logo, urlData?.image]),
-        category: value.category,
-      }
-
-      const process = toast.loading('Saving link...')
+      const process = toast.loading('Updating link...')
 
       startTransition(async () => {
-        const res = await saveNewLinkFn({
-          data: partialData as Links,
+        const res = await updateLinkFn({
+          data: {
+            id: props.link.$id,
+            ...value,
+          },
         })
 
         if (!res.success) {
-          toast.error(res.error || 'An error occurred while saving the link.', {
-            id: process,
-          })
+          toast.error(res.error, { id: process })
           return
         }
 
         await router.invalidate()
-
-        startTransition(() => {
-          toast.success('Link saved successfully!', { id: process })
-          setIsOpen(false)
-        })
+        toast.success('Successfully updated link!')
       })
     },
   })
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+    <Dialog>
       <DialogTrigger asChild>
-        <Button>Save Link</Button>
+        <Button
+          className="h-auto py-1 text-xs uppercase"
+          variant={'secondary'}
+          size={'sm'}
+        >
+          <PenIcon className="size-3" />
+          Edit
+        </Button>
       </DialogTrigger>
 
       <DialogContent
@@ -116,46 +102,44 @@ export default function ConfirmCreateLink(props: {
         className="max-w-2xl"
       >
         <DialogHeader>
-          <DialogTitle>Save Link</DialogTitle>
+          <DialogTitle>Update Link</DialogTitle>
           <DialogDescription>
-            Setup your link, add a title and description
+            Update your link information and details
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4">
-          {'error' in props.data ? null : (
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg inline-flex space-x-2">
-                  {props.data.favicon ? (
-                    <img
-                      src={new URL(
-                        props.data.favicon,
-                        props.data.url,
-                      ).toString()}
-                      alt="favicon"
-                      className="h-6 w-6 rounded-full"
-                    />
-                  ) : null}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg inline-flex space-x-2">
+                {props.link.urlFavicon ? (
+                  <img
+                    src={new URL(
+                      props.link.urlFavicon,
+                      props.link.urlLink,
+                    ).toString()}
+                    alt="favicon"
+                    className="h-6 w-6 rounded-full"
+                  />
+                ) : null}
 
-                  <span>{props.data.title}</span>
-                </CardTitle>
-                <CardDescription>{props.data.description}</CardDescription>
-              </CardHeader>
-              <CardContent className="grid">
-                <div>
-                  <a
-                    href={props.data.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-500 text-sm break-all"
-                  >
-                    {props.data.url}
-                  </a>
-                </div>
-              </CardContent>
-            </Card>
-          )}
+                <span>{props.link.urlTitle}</span>
+              </CardTitle>
+              <CardDescription>{props.link.urlDescription}</CardDescription>
+            </CardHeader>
+            <CardContent className="grid">
+              <div>
+                <a
+                  href={props.link.urlLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-500 dark:text-blue-400 text-sm break-all"
+                >
+                  {props.link.urlLink}
+                </a>
+              </div>
+            </CardContent>
+          </Card>
 
           <form
             onSubmit={(e) => {
@@ -260,7 +244,7 @@ export default function ConfirmCreateLink(props: {
 
             <div className="text-right">
               <Button disabled={isProcessing} type="submit">
-                {isProcessing ? 'Saving...' : 'Save Link'}
+                {isProcessing ? 'Updating...' : 'Update Link'}
               </Button>
             </div>
           </form>

@@ -7,12 +7,15 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import { Links } from '@/types/links'
+import LinksItemCardActions from './links-item-card-actions'
 
 export default function LinksItemCard(props: { link: Links }) {
   const { link } = props
 
   return (
-    <Card>
+    <Card className="group relative">
+      <LinksItemCardActions link={link} />
+
       <CardHeader>
         <CardTitle className="inline-flex items-center space-x-2 truncate">
           {link.urlFavicon ? (
