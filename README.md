@@ -31,14 +31,11 @@ ANALYTICS_WEBSITE_ID=
 
 ### Stack
 
-- Remix (React)
+- Tanstack Start
 - ShadCN
 - Tailwind
 - AppWrite (Database and Auth)
 
-> [!INFO]
-> While this app is built with Remix, all of the auth setup and the forms are implemented in the client side, Remix mainly handles the routing only.
-
-##
+---
 
 &copy; 2024 | tbdsux
