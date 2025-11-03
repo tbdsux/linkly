@@ -111,7 +111,6 @@ export const updateLinkFn = createServerFn({ method: 'POST' })
         tableId: appwriteConfig.collection.categories,
         queries: [Query.equal('ownerId', user.$id)],
       })
-      console.log(userCategories.rows)
       const categoryExists = userCategories.rows.some(
         (cat) => cat.name === data.category,
       )
