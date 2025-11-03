@@ -1,6 +1,7 @@
 import logo from '@/assets/logo.png'
 import { Link } from '@tanstack/react-router'
 import AuthHeaderMenu from './auth-header-menu'
+import { ThemeToggle } from './theme-toggle'
 
 export default function Header() {
   return (
@@ -10,8 +11,12 @@ export default function Header() {
         <strong className="font-bold text-lg">Linkly</strong>
       </Link>
 
-      <nav className="ml-auto flex gap-4 sm:gap-6">
-        <AuthHeaderMenu />
+      <nav className="ml-auto flex gap-2 sm:gap-6">
+        <div className="inline-flex items-center gap-2">
+          <ThemeToggle />
+
+          <AuthHeaderMenu />
+        </div>
       </nav>
     </header>
   )

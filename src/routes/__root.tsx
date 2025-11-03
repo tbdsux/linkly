@@ -8,12 +8,16 @@ import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 
 import TanStackQueryDevtools from '../integrations/tanstack-query/devtools'
 
+import '@fontsource-variable/public-sans'
 import appCss from '../styles.css?url'
 
 import AuthProvider from '@/components/auth-provider'
 import Header from '@/components/header'
 import NotFoundError from '@/components/not-found-error'
+import { ThemeProvider } from '@/components/theme-provider'
+import { Toaster } from '@/components/ui/sonner'
 import { getLoggedInUserFn } from '@/lib/auth'
+import { getThemeServerFn } from '@/lib/theme'
 import type { QueryClient } from '@tanstack/react-query'
 
 interface MyRouterContext {
@@ -44,9 +48,12 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
     return userSession
   },
   loader: async ({ context }) => {
+    const theme = await getThemeServerFn()
+
     return {
       avatar: context.avatar,
       user: context.user,
+      theme,
     }
   },
   notFoundComponent: () => <NotFoundError />,
@@ -56,32 +63,36 @@ function RootDocument({ children }: { children: React.ReactNode }) {
   const userSession = Route.useLoaderData()
 
   return (
-    <html lang="en">
+    <html className={userSession.theme} lang="en">
       <head>
         <HeadContent />
       </head>
       <body>
-        <AuthProvider
-          user={userSession ? userSession.user : null}
-          avatar={userSession ? userSession.avatar : null}
-        >
-          <main className="flex flex-col min-h-screen md:w-5/6 lg:w-4/5 xl:w-3/4 mx-auto">
-            <Header />
-            {children}
-          </main>
-        </AuthProvider>
-        <TanStackDevtools
-          config={{
-            position: 'bottom-right',
-          }}
-          plugins={[
-            {
-              name: 'Tanstack Router',
-              render: <TanStackRouterDevtoolsPanel />,
-            },
-            TanStackQueryDevtools,
-          ]}
-        />
+        <ThemeProvider theme={userSession.theme}>
+          <AuthProvider
+            user={userSession ? userSession.user : null}
+            avatar={userSession ? userSession.avatar : null}
+          >
+            <main className="flex flex-col min-h-screen md:w-5/6 lg:w-4/5 xl:w-3/4 mx-auto">
+              <Header />
+              {children}
+            </main>
+          </AuthProvider>
+          <Toaster />
+
+          <TanStackDevtools
+            config={{
+              position: 'bottom-right',
+            }}
+            plugins={[
+              {
+                name: 'Tanstack Router',
+                render: <TanStackRouterDevtoolsPanel />,
+              },
+              TanStackQueryDevtools,
+            ]}
+          />
+        </ThemeProvider>
         <Scripts />
       </body>
     </html>
