@@ -1,0 +1,15 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "127.0.0.1:5190:3000"
+    networks:
+      - linkstore-network
+    env_file:
+      - .env
+    restart: unless-stopped
+
+networks:
+  linkstore-network:

@@ -63,12 +63,12 @@ function RootDocument({ children }: { children: React.ReactNode }) {
   const userSession = Route.useLoaderData()
 
   return (
-    <html className={userSession.theme} lang="en">
+    <html className={userSession?.theme ?? 'light'} lang="en">
       <head>
         <HeadContent />
       </head>
       <body>
-        <ThemeProvider theme={userSession.theme}>
+        <ThemeProvider theme={userSession?.theme ?? 'light'}>
           <AuthProvider
             user={userSession ? userSession.user : null}
             avatar={userSession ? userSession.avatar : null}
