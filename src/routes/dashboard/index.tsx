@@ -1,9 +1,12 @@
-import { getUsersCategories } from '@/data/get-users-categories'
-import { getUserLinks } from '@/data/get-users-links'
 import NewCategory from '@/modules/categories/new-category'
 import DashboardProvider from '@/modules/dashboard-provider'
 import LinksList from '@/modules/link-management/links-list'
 import NewLink from '@/modules/link-management/new-link'
+import {
+  fetchUserCategories,
+  fetchUserLinks,
+} from '@/services/queries/user-dashboard'
+import { useSuspenseQuery } from '@tanstack/react-query'
 import { createFileRoute, redirect } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/dashboard/')({
@@ -20,43 +23,30 @@ export const Route = createFileRoute('/dashboard/')({
       throw redirect({ to: '/login' })
     }
 
-    const userLinks = await getUserLinks({
-      data: {
-        userId: context.user.$id,
-      },
-    })
+    context.queryClient.ensureQueryData(fetchUserLinks)
 
-    const userCategories = await getUsersCategories({
-      data: {
-        userId: context.user.$id,
-      },
-    })
-
-    return {
-      userLinks,
-      userCategories,
-    }
+    context.queryClient.ensureQueryData(fetchUserCategories)
   },
 })
 
 function RouteComponent() {
-  const { userLinks, userCategories } = Route.useLoaderData()
+  const userCategories = useSuspenseQuery(fetchUserCategories)
 
   return (
-    <DashboardProvider categories={userCategories.rows}>
+    <DashboardProvider categories={userCategories.data.rows}>
       <div className="flex-1 px-4 lg:px-6 mx-auto w-full">
         <div className="flex justify-between items-center space-x-4 w-full">
           <h3 className="font-bold text-lg">All Links</h3>
 
           <div className="inline-flex items-center space-x-2">
             <NewLink />
-            <NewCategory categoryCount={userCategories.total} />
+            <NewCategory categoryCount={userCategories.data.total} />
           </div>
         </div>
 
         <hr className="my-4" />
 
-        <LinksList userLinks={userLinks} />
+        <LinksList />
       </div>
     </DashboardProvider>
   )

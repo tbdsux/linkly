@@ -23,6 +23,7 @@ export const Route = createFileRoute('/login/oauth/')({
 
         await appSession.update({
           sessionSecret: session.secret,
+          userId: session.userId,
         })
 
         return redirect({ to: '/dashboard' })

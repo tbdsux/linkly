@@ -57,6 +57,8 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
     }
   },
   notFoundComponent: () => <NotFoundError />,
+  pendingMs: 0,
+  pendingMinMs: 0,
 })
 
 function RootDocument({ children }: { children: React.ReactNode }) {
