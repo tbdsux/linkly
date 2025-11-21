@@ -1,4 +1,4 @@
-import { boolean, pgTable, text } from 'drizzle-orm/pg-core'
+import { boolean, pgTable, text, timestamp } from 'drizzle-orm/pg-core'
 import { user } from './auth'
 
 export const link = pgTable('link', {
@@ -14,6 +14,11 @@ export const link = pgTable('link', {
   urlFavicon: text('url_favicon').notNull(),
   category: text('category'),
   slug: text('slug').unique(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at')
+    .defaultNow()
+    .$onUpdate(() => /* @__PURE__ */ new Date())
+    .notNull(),
 })
 
 export const category = pgTable('category', {
@@ -23,4 +28,9 @@ export const category = pgTable('category', {
   userId: text('user_id')
     .notNull()
     .references(() => user.id, { onDelete: 'cascade' }),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at')
+    .defaultNow()
+    .$onUpdate(() => /* @__PURE__ */ new Date())
+    .notNull(),
 })

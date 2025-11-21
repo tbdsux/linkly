@@ -1,7 +1,9 @@
-import { appwriteConfig, createSessionClient } from '@/lib/appwrite'
+import { getSession } from '@/lib/auth'
+import { db } from '@/lib/db'
+import { category } from '@/lib/db/schema'
 import { authMiddleware } from '@/middleware/auth'
 import { createServerFn } from '@tanstack/react-start'
-import { ID, Query } from 'node-appwrite'
+import { nanoid } from 'nanoid'
 import z from 'zod'
 
 const inputSchema = z.object({
@@ -12,34 +14,26 @@ export const createCategoryFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .inputValidator(inputSchema)
   .handler(async ({ data }) => {
-    const { tablesDb, account } = await createSessionClient()
-
-    const user = await account.get()
+    const session = await getSession()
+    if (!session) {
+      return {
+        success: false,
+        error: 'Unauthorized',
+      }
+    }
 
     try {
-      // Check if category with the same name already exists for the user
-      const existingCategories = await tablesDb.listRows({
-        databaseId: appwriteConfig.databaseId,
-        tableId: appwriteConfig.collection.categories,
-        queries: [
-          Query.equal('ownerId', user.$id),
-          Query.equal('name', data.name),
-        ],
-      })
+      const id = nanoid()
 
-      if (existingCategories.total > 0) {
-        throw new Error('Category with this name already exists.')
-      }
-
-      await tablesDb.createRow({
-        databaseId: appwriteConfig.databaseId,
-        tableId: appwriteConfig.collection.categories,
-        rowId: ID.unique(),
-        data: {
-          ownerId: user.$id,
+      await db
+        .insert(category)
+        .values({
+          id,
           name: data.name,
-        },
-      })
+          slug: data.name.toLowerCase().replaceAll(' ', '-').trim(),
+          userId: session.user.id,
+        })
+        .execute()
 
       return {
         success: true,

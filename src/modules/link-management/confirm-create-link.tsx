@@ -31,12 +31,13 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
+import { linkFormSchema } from '@/form-schema/new-link-schema'
 import { getNonEmptyString } from '@/lib/utils'
-import { linkFormSchema } from '@/shared-schema/new-link-schema'
-import { Links } from '@/types/links'
+import { fetchUserLinks } from '@/services/queries/user-dashboard'
+import { Link } from '@/types/links'
 import { UrlError, UrlMetadata } from '@/types/url'
 import { useForm } from '@tanstack/react-form'
-import { useRouter } from '@tanstack/react-router'
+import { useQueryClient } from '@tanstack/react-query'
 import { useState, useTransition } from 'react'
 import { toast } from 'sonner'
 import { useDashboardData } from '../dashboard-provider'
@@ -44,7 +45,7 @@ import { useDashboardData } from '../dashboard-provider'
 export default function ConfirmCreateLink(props: {
   data: UrlMetadata | UrlError
 }) {
-  const router = useRouter()
+  const queryClient = useQueryClient()
 
   const { user } = useAuth()
   const { categories } = useDashboardData()
@@ -71,7 +72,7 @@ export default function ConfirmCreateLink(props: {
 
       const urlData = 'error' in props.data ? null : props.data
 
-      const partialData: Partial<Links> = {
+      const partialData: Partial<Link> = {
         urlLink:
           'error' in props.data ? props.data.url : props.data.requested_url,
         urlTitle: value.urlTitle,
@@ -85,7 +86,14 @@ export default function ConfirmCreateLink(props: {
 
       startTransition(async () => {
         const res = await saveNewLinkFn({
-          data: partialData as Links,
+          data: {
+            urlLink: partialData.urlLink ?? '',
+            urlTitle: partialData.urlTitle ?? '',
+            urlFavicon: partialData.urlFavicon ?? '',
+            urlDescription: partialData.urlDescription || undefined,
+            urlLogo: partialData.urlLogo || undefined,
+            category: partialData.category || undefined,
+          },
         })
 
         if (!res.success) {
@@ -95,7 +103,9 @@ export default function ConfirmCreateLink(props: {
           return
         }
 
-        await router.invalidate()
+        await queryClient.invalidateQueries({
+          queryKey: fetchUserLinks.queryKey,
+        })
 
         startTransition(() => {
           toast.success('Link saved successfully!', { id: process })
@@ -242,7 +252,7 @@ export default function ConfirmCreateLink(props: {
                           {/* @ts-expect-error This works lol */}
                           <SelectItem value={null}>None</SelectItem>
                           {categories.map((item) => (
-                            <SelectItem key={item.$id} value={item.name}>
+                            <SelectItem key={item.id} value={item.name}>
                               {item.name}
                             </SelectItem>
                           ))}

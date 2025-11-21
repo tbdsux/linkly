@@ -16,8 +16,8 @@ import Header from '@/components/header'
 import NotFoundError from '@/components/not-found-error'
 import { ThemeProvider } from '@/components/theme-provider'
 import { Toaster } from '@/components/ui/sonner'
-import { getLoggedInUserFn } from '@/lib/auth'
 import { getThemeServerFn } from '@/lib/theme'
+import { getUserSessionFn } from '@/server/session'
 import type { QueryClient } from '@tanstack/react-query'
 
 interface MyRouterContext {
@@ -44,15 +44,17 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
   }),
   shellComponent: RootDocument,
   beforeLoad: async () => {
-    const userSession = await getLoggedInUserFn()
-    return userSession
+    const session = await getUserSessionFn()
+
+    return {
+      session,
+    }
   },
   loader: async ({ context }) => {
     const theme = await getThemeServerFn()
 
     return {
-      avatar: context.avatar,
-      user: context.user,
+      user: context.session?.user,
       theme,
     }
   },
@@ -71,10 +73,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         <ThemeProvider theme={userSession?.theme ?? 'light'}>
-          <AuthProvider
-            user={userSession ? userSession.user : null}
-            avatar={userSession ? userSession.avatar : null}
-          >
+          <AuthProvider user={userSession.user ? userSession.user : null}>
             <main className="flex flex-col min-h-screen md:w-5/6 lg:w-4/5 xl:w-3/4 mx-auto">
               <Header />
               {children}

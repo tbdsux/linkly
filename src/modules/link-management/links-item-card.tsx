@@ -6,10 +6,10 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import { Links } from '@/types/links'
+import { Link } from '@/types/links'
 import LinksItemCardActions from './links-item-card-actions'
 
-export default function LinksItemCard(props: { link: Links }) {
+export default function LinksItemCard(props: { link: Link }) {
   const { link } = props
 
   return (
@@ -52,11 +52,11 @@ export default function LinksItemCard(props: { link: Links }) {
             <Badge variant={'outline'}>Uncategorized</Badge>
           )}
 
-          {link.$updatedAt > link.$createdAt ? (
+          {link.updatedAt > link.createdAt ? (
             <p className="text-right mt-2">
               <small className="text-muted-foreground">
                 Updated:{' '}
-                <strong>{new Date(link.$createdAt).toLocaleString()}</strong>
+                <strong>{new Date(link.createdAt).toLocaleString()}</strong>
               </small>
             </p>
           ) : null}

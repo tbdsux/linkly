@@ -95,12 +95,12 @@ importers:
       lucide-react:
         specifier: ^0.544.0
         version: 0.544.0(react@19.2.0)
+      nanoid:
+        specifier: ^5.1.6
+        version: 5.1.6
       next-themes:
         specifier: ^0.4.6
         version: 0.4.6(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
-      node-appwrite:
-        specifier: ^20.3.0
-        version: 20.3.0
       pg:
         specifier: ^8.16.3
         version: 8.16.3
@@ -2928,6 +2928,11 @@ packages:
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
     hasBin: true
 
+  nanoid@5.1.6:
+    resolution: {integrity: sha512-c7+7RQ+dMB5dPwwCp4ee1/iV/q2P6aK1mTZcfr1BTuVlyW9hJYiMPybJCcnBlQtuSmTIWNeazm/zqNoZSSElBg==}
+    engines: {node: ^18 || >=20}
+    hasBin: true
+
   nanostores@1.0.1:
     resolution: {integrity: sha512-kNZ9xnoJYKg/AfxjrVL4SS0fKX++4awQReGqWnwTRHxeHGZ1FJFVgTqr/eMrNQdp0Tz7M7tG/TDaX8QfHDwVCw==}
     engines: {node: ^20.0.0 || >=22.0.0}
@@ -2964,12 +2969,6 @@ packages:
         optional: true
       xml2js:
         optional: true
-
-  node-appwrite@20.3.0:
-    resolution: {integrity: sha512-vaxlpkNTtjkccyngwc9HRSwQQasZ/CJri6KMZ62mlDAM1YdvOgqIM8EYJwvhx/fiHdyjfxithFcmnvzUR9TGTQ==}
-
-  node-fetch-native-with-agent@1.7.2:
-    resolution: {integrity: sha512-5MaOOCuJEvcckoz7/tjdx1M6OusOY6Xc5f459IaruGStWnKzlI1qpNgaAwmn4LmFYcsSlj+jBMk84wmmRxfk5g==}
 
   node-fetch-native@1.6.7:
     resolution: {integrity: sha512-g9yhqoedzIUm0nTnTqAQvueMPVOuIY16bqgAJJC8XOOubYFNwz6IER9qs0Gq2Xd0+CecCKFjtdDTMA4u4xG06Q==}
@@ -6533,6 +6532,8 @@ snapshots:
 
   nanoid@3.3.11: {}
 
+  nanoid@5.1.6: {}
+
   nanostores@1.0.1: {}
 
   napi-postinstall@0.3.4: {}
@@ -6595,12 +6596,6 @@ snapshots:
       - mysql2
       - sqlite3
       - uploadthing
-
-  node-appwrite@20.3.0:
-    dependencies:
-      node-fetch-native-with-agent: 1.7.2
-
-  node-fetch-native-with-agent@1.7.2: {}
 
   node-fetch-native@1.6.7: {}
 
