@@ -19,7 +19,7 @@ export const Route = createFileRoute('/dashboard/')({
     ],
   }),
   loader: async ({ context }) => {
-    if (!context.user) {
+    if (!context.session) {
       throw redirect({ to: '/login' })
     }
 
@@ -33,14 +33,14 @@ function RouteComponent() {
   const userCategories = useSuspenseQuery(fetchUserCategories)
 
   return (
-    <DashboardProvider categories={userCategories.data.rows}>
+    <DashboardProvider categories={userCategories.data.data ?? []}>
       <div className="flex-1 px-4 lg:px-6 mx-auto w-full">
         <div className="flex justify-between items-center space-x-4 w-full">
           <h3 className="font-bold text-lg">All Links</h3>
 
           <div className="inline-flex items-center space-x-2">
             <NewLink />
-            <NewCategory categoryCount={userCategories.data.total} />
+            <NewCategory categoryCount={0} />
           </div>
         </div>
 

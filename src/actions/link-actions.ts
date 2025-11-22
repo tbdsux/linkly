@@ -1,12 +1,14 @@
-import { appwriteConfig, createSessionClient } from '@/lib/appwrite'
-import { authMiddleware } from '@/middleware/auth'
 import {
   removeLinkFormSchema,
   updateLinkFormSchema,
-} from '@/shared-schema/new-link-schema'
-import { Category, Links } from '@/types/links'
+} from '@/form-schema/new-link-schema'
+import { getSession } from '@/lib/auth'
+import { db } from '@/lib/db'
+import { category, link } from '@/lib/db/schema'
+import { authMiddleware } from '@/middleware/auth'
 import { createServerFn } from '@tanstack/react-start'
-import { ID, Query } from 'node-appwrite'
+import { and, eq } from 'drizzle-orm'
+import { nanoid } from 'nanoid'
 import z from 'zod'
 
 const inputSchema = z.object({
@@ -23,18 +25,21 @@ export const saveNewLinkFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .inputValidator(inputSchema)
   .handler(async ({ data }) => {
-    const { tablesDb, account } = await createSessionClient()
-    const user = await account.get()
+    const session = await getSession()
+    if (!session) {
+      return {
+        success: false,
+        error: 'Unauthorized',
+      }
+    }
 
     try {
-      await tablesDb.createRow({
-        databaseId: appwriteConfig.databaseId,
-        tableId: appwriteConfig.collection.links,
-        rowId: ID.unique(),
-        data: {
-          ...data,
-          ownerId: user.$id,
-        },
+      const id = nanoid()
+
+      await db.insert(link).values({
+        id,
+        ...data,
+        userId: session.user.id,
       })
 
       return {
@@ -53,25 +58,32 @@ export const removeLinkFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .inputValidator(removeLinkFormSchema)
   .handler(async ({ data }) => {
-    const { tablesDb, account } = await createSessionClient()
-    const user = await account.get()
+    const session = await getSession()
+    if (!session) {
+      return {
+        success: false,
+        error: 'Unauthorized',
+      }
+    }
 
     try {
       // ::> Verify link ownership before deletion
-      const link = await tablesDb.getRow<Links>({
-        databaseId: appwriteConfig.databaseId,
-        tableId: appwriteConfig.collection.links,
-        rowId: data.id,
-      })
-      if (link.ownerId !== user.$id) {
+      const linkItem = await db
+        .select()
+        .from(link)
+        .where(and(eq(link.id, data.id), eq(link.userId, session.user.id)))
+        .execute()
+      if (linkItem.length === 0) {
+        throw new Error('Unauthorized to delete this link')
+      }
+      if (linkItem[0].userId !== session.user.id) {
         throw new Error('Unauthorized to delete this link')
       }
 
-      await tablesDb.deleteRow({
-        databaseId: appwriteConfig.databaseId,
-        tableId: appwriteConfig.collection.links,
-        rowId: data.id,
-      })
+      await db
+        .delete(link)
+        .where(and(eq(link.id, data.id), eq(link.userId, session.user.id)))
+        .execute()
 
       return {
         success: true,
@@ -91,43 +103,50 @@ export const updateLinkFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .inputValidator(updateLinkFormSchema)
   .handler(async ({ data }) => {
-    const { tablesDb, account } = await createSessionClient()
-    const user = await account.get()
+    const session = await getSession()
+    if (!session) {
+      return {
+        success: false,
+        error: 'Unauthorized',
+      }
+    }
 
     try {
-      // ::> Verify link ownership before deletion
-      const link = await tablesDb.getRow<Links>({
-        databaseId: appwriteConfig.databaseId,
-        tableId: appwriteConfig.collection.links,
-        rowId: data.id,
-      })
-      if (link.ownerId !== user.$id) {
-        throw new Error('Unauthorized to delete this link')
+      // ::> Verify link ownership before update
+      const linkItem = await db
+        .select()
+        .from(link)
+        .where(and(eq(link.id, data.id), eq(link.userId, session.user.id)))
+        .execute()
+      if (linkItem.length === 0) {
+        throw new Error('Unauthorized to update this link')
+      }
+      if (linkItem[0].userId !== session.user.id) {
+        throw new Error('Unauthorized to update this link')
       }
 
       // ::> Check if category is legit
-      const userCategories = await tablesDb.listRows<Category>({
-        databaseId: appwriteConfig.databaseId,
-        tableId: appwriteConfig.collection.categories,
-        queries: [Query.equal('ownerId', user.$id)],
-      })
-      const categoryExists = userCategories.rows.some(
+      const userCategories = await db
+        .select()
+        .from(category)
+        .where(eq(category.userId, session.user.id))
+        .execute()
+      const categoryExists = userCategories.some(
         (cat) => cat.name === data.category,
       )
       if (!categoryExists) {
         throw new Error('Category does not exist')
       }
 
-      await tablesDb.updateRow<Links>({
-        databaseId: appwriteConfig.databaseId,
-        tableId: appwriteConfig.collection.links,
-        rowId: data.id,
-        data: {
+      await db
+        .update(link)
+        .set({
           urlTitle: data.urlTitle,
           urlDescription: data.urlDescription,
           category: data.category,
-        },
-      })
+        })
+        .where(and(eq(link.id, data.id), eq(link.userId, session.user.id)))
+        .execute()
 
       return {
         success: true,

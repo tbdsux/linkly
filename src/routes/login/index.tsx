@@ -6,12 +6,9 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import { createAdminClient } from '@/lib/appwrite'
-import { createFileRoute, redirect } from '@tanstack/react-router'
-import { createServerFn, useServerFn } from '@tanstack/react-start'
-import { getRequest } from '@tanstack/react-start/server'
-import { GithubIcon, GlobeIcon } from 'lucide-react'
-import { OAuthProvider } from 'node-appwrite'
+import { authClient } from '@/lib/auth-client'
+import { createFileRoute } from '@tanstack/react-router'
+import { GithubIcon } from 'lucide-react'
 
 export const Route = createFileRoute('/login/')({
   component: RouteComponent,
@@ -24,43 +21,13 @@ export const Route = createFileRoute('/login/')({
   }),
 })
 
-export const signInWithGithubFn = createServerFn({ method: 'POST' }).handler(
-  async () => {
-    const { account } = createAdminClient()
-
-    const request = getRequest()
-    const origin = request.headers.get('origin')
-
-    const redirectUrl = await account.createOAuth2Token({
-      provider: OAuthProvider.Github,
-      success: `${origin}/login/oauth`,
-      failure: `${origin}/login`,
-    })
-
-    throw redirect({ href: redirectUrl })
-  },
-)
-
-export const signInWithGoogleFn = createServerFn({ method: 'POST' }).handler(
-  async () => {
-    const { account } = createAdminClient()
-
-    const request = getRequest()
-    const origin = request.headers.get('origin')
-
-    const redirectUrl = await account.createOAuth2Token({
-      provider: OAuthProvider.Google,
-      success: `${origin}/login/oauth`,
-      failure: `${origin}/login`,
-    })
-
-    throw redirect({ href: redirectUrl })
-  },
-)
-
 function RouteComponent() {
-  const signInWithGithub = useServerFn(signInWithGithubFn)
-  const signInWithGoogle = useServerFn(signInWithGoogleFn)
+  const signInWithGithub = async () => {
+    await authClient.signIn.social({
+      provider: 'github',
+      callbackURL: '/dashboard',
+    })
+  }
 
   return (
     <div className="flex items-center justify-center space-y-4">
@@ -81,13 +48,14 @@ function RouteComponent() {
               <GithubIcon />
               Login with Github
             </Button>
-            <Button
+
+            {/* <Button
               onClick={() => signInWithGoogle()}
               className="cursor-pointer"
             >
               <GlobeIcon />
               Login with Google
-            </Button>
+            </Button> */}
           </div>
         </CardContent>
       </Card>

@@ -1,6 +1,4 @@
-import { logoutFn } from '@/lib/auth'
 import { Link, useLocation } from '@tanstack/react-router'
-import { useServerFn } from '@tanstack/react-start'
 import { LogOutIcon } from 'lucide-react'
 import { useAuth } from './auth-provider'
 import { Button } from './ui/button'
@@ -12,9 +10,7 @@ import {
 } from './ui/dropdown-menu'
 
 export default function AuthHeaderMenu() {
-  const logoutAction = useServerFn(logoutFn)
-
-  const { user, avatar } = useAuth()
+  const { user } = useAuth()
   const { pathname } = useLocation()
 
   if (!user) {
@@ -40,9 +36,9 @@ export default function AuthHeaderMenu() {
           variant={'outline'}
           className="inline-flex items-center space-x-2"
         >
-          {avatar ? (
+          {user ? (
             <img
-              src={`data:image/png;base64,${avatar}`}
+              src={`https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}`}
               alt={user.name}
               height={25}
               width={25}
@@ -59,7 +55,7 @@ export default function AuthHeaderMenu() {
       <DropdownMenuContent className="w-56" align="end">
         <DropdownMenuItem
           onSelect={async () => {
-            await logoutAction()
+            // await logoutAction()
           }}
         >
           <LogOutIcon className="mr-2 h-4 w-4" />

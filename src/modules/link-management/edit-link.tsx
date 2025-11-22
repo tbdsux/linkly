@@ -31,8 +31,8 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
-import { linkFormSchema } from '@/shared-schema/new-link-schema'
-import { Links } from '@/types/links'
+import { linkFormSchema } from '@/form-schema/new-link-schema'
+import { Link } from '@/types/links'
 import { useForm } from '@tanstack/react-form'
 import { useRouter } from '@tanstack/react-router'
 import { PenIcon } from 'lucide-react'
@@ -40,7 +40,7 @@ import { useTransition } from 'react'
 import { toast } from 'sonner'
 import { useDashboardData } from '../dashboard-provider'
 
-export default function EditLink(props: { link: Links }) {
+export default function EditLink(props: { link: Link }) {
   const { user } = useAuth()
   const { categories } = useDashboardData()
 
@@ -68,7 +68,7 @@ export default function EditLink(props: { link: Links }) {
       startTransition(async () => {
         const res = await updateLinkFn({
           data: {
-            id: props.link.$id,
+            id: props.link.id,
             ...value,
           },
         })
@@ -226,7 +226,7 @@ export default function EditLink(props: { link: Links }) {
                           {/* @ts-expect-error This works lol */}
                           <SelectItem value={null}>None</SelectItem>
                           {categories.map((item) => (
-                            <SelectItem key={item.$id} value={item.name}>
+                            <SelectItem key={item.id} value={item.name}>
                               {item.name}
                             </SelectItem>
                           ))}

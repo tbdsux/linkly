@@ -1,25 +1,27 @@
-import { useAppSession } from '@/hooks/use-app-session'
-import { appwriteConfig, createSessionClient } from '@/lib/appwrite'
-import { Links } from '@/types/links'
+import { getSession } from '@/lib/auth'
+import { db } from '@/lib/db'
+import { link } from '@/lib/db/schema'
 import { createServerFn } from '@tanstack/react-start'
-import { Query } from 'node-appwrite'
+import { desc, eq } from 'drizzle-orm'
 
 export const getUserLinks = createServerFn().handler(async () => {
-  const session = await useAppSession()
-  if (!session.data.userId) {
-    throw new Error('User not authenticated')
+  const session = await getSession()
+  if (!session) {
+    return {
+      success: false,
+      error: 'Unauthorized',
+    }
   }
 
-  const userId = session.data.userId
+  const linkItems = await db
+    .select()
+    .from(link)
+    .where(eq(link.userId, session.user.id))
+    .orderBy(desc(link.createdAt))
+    .execute()
 
-  const { tablesDb } = await createSessionClient()
-
-  // get user links
-  const links = await tablesDb.listRows<Links>({
-    databaseId: appwriteConfig.databaseId,
-    tableId: appwriteConfig.collection.links,
-    queries: [Query.equal('ownerId', userId), Query.orderDesc('$updatedAt')],
-  })
-
-  return links
+  return {
+    success: true,
+    data: linkItems,
+  }
 })

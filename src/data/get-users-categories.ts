@@ -1,25 +1,25 @@
-import { useAppSession } from '@/hooks/use-app-session'
-import { appwriteConfig, createSessionClient } from '@/lib/appwrite'
-import { Category } from '@/types/links'
+import { getSession } from '@/lib/auth'
+import { db } from '@/lib/db'
+import { category } from '@/lib/db/schema'
 import { createServerFn } from '@tanstack/react-start'
-import { Query } from 'node-appwrite'
+import { eq } from 'drizzle-orm'
 
 export const getUsersCategories = createServerFn().handler(async () => {
-  const session = await useAppSession()
-  if (!session.data.userId) {
-    throw new Error('User not authenticated')
+  const session = await getSession()
+  if (!session) {
+    return {
+      success: false,
+      error: 'Unauthorized',
+    }
   }
 
-  const userId = session.data.userId
+  const categoryItems = await db
+    .select()
+    .from(category)
+    .where(eq(category.userId, session.user.id))
 
-  const { tablesDb } = await createSessionClient()
-
-  // get user categories
-  const links = await tablesDb.listRows<Category>({
-    databaseId: appwriteConfig.databaseId,
-    tableId: appwriteConfig.collection.categories,
-    queries: [Query.equal('ownerId', userId), Query.orderDesc('$updatedAt')],
-  })
-
-  return links
+  return {
+    success: true,
+    data: categoryItems,
+  }
 })

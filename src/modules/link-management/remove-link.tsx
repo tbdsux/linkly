@@ -18,13 +18,13 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import { Links } from '@/types/links'
+import { Link } from '@/types/links'
 import { useRouter } from '@tanstack/react-router'
 import { TrashIcon } from 'lucide-react'
 import { useState, useTransition } from 'react'
 import { toast } from 'sonner'
 
-export default function RemoveLink(props: { link: Links }) {
+export default function RemoveLink(props: { link: Link }) {
   const { user } = useAuth()
 
   const [isOpen, setIsOpen] = useState(false)
@@ -40,7 +40,7 @@ export default function RemoveLink(props: { link: Links }) {
     startTransition(async () => {
       const res = await removeLinkFn({
         data: {
-          id: props.link.$id,
+          id: props.link.id,
         },
       })
       if (!res.success) {
